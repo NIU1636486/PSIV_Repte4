@@ -11,7 +11,7 @@ import wandb
 
 
 wandb.login(key="8e9b2ed0a8b812e7888f16b3aa28491ba440d81a")
-epochs = 10
+epochs = 20
 batch_size = 128
 wandb.init(project="PSIV_Repte4", config={"epochs": epochs, "batch_size": batch_size}, dir="wandb")
 if platform.system() == 'Linux':
@@ -64,6 +64,8 @@ dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 print("Data loaded")
 
 model = CNNModel()
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model = model.to(device)
 initialize_weights(model)
 optimizer = Adam(model.parameters(), lr=3e-4)
 criterion = CrossEntropyLoss()
@@ -77,6 +79,7 @@ for epoch in range(epochs):
     total = 0
 
     for X_batch, y_batch in dataloader:
+        X_batch, y_batch = X_batch.to(device), y_batch.to(device)
         optimizer.zero_grad()
         outputs = model(X_batch)
         loss = criterion(outputs, y_batch)
@@ -90,5 +93,11 @@ for epoch in range(epochs):
         wandb.log({"loss": loss.item()})
     wandb.log({"loss": total_loss / len(dataloader), "accuracy": correct / total, "epoch": epoch})
     print(f"Epoch {epoch + 1}/{epochs}, Loss: {total_loss / len(dataloader):.4f}, Accuracy: {correct / total:.4f}")
+
+model = model.to("cpu")
+torch.save(model.state_dict(), "model_backbone.pth")
+
+torch.cuda.empty_cache()
+gc.collect()
 
 wandb.finish()
