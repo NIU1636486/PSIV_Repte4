@@ -7,8 +7,8 @@ from model_Backbone import CNNModel
 from torch import nn
 from loadDataFirstTrain import loadData
 import wandb
-
-
+import platform
+import gc
 
 wandb.login(key="8e9b2ed0a8b812e7888f16b3aa28491ba440d81a")
 epochs = 20

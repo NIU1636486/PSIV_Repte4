@@ -19,6 +19,8 @@ def loadData(pathDir):
     # Filtrar archivos .parquet y .npz
     parquets = [file for file in files if file.endswith('.parquet')]
     npzs = [file for file in files if file.endswith('.npz')]
+    parquets.sort()
+    npzs.sort()
 
     labels = []
     windows = []
