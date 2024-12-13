@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import pandas as pd
-
+import gc
 
 def loadData(pathDir):
     """
@@ -48,9 +48,9 @@ def loadData(pathDir):
         del EEG_segments
         del label_list
         del data
+        gc.collect()
         # if parquet.split("_")[0] == "chb12":
         #     break
-        
     print(f"Metadatos almacenados: {len(labels)}")
     print(f"Ventanas EEG almacenadas: {len(windows)}")
     return windows, labels
