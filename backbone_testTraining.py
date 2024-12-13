@@ -5,13 +5,31 @@ from torch.optim import Adam
 from torch.nn import CrossEntropyLoss
 from model_Backbone import CNNModel
 from torch import nn
+from loadDataFirstTrain import loadData
+import wandb
+
+
+
+wandb.login(key="8e9b2ed0a8b812e7888f16b3aa28491ba440d81a")
+epochs = 10
+batch_size = 128
+wandb.init(project="PSIV_Repte4", config={"epochs": epochs, "batch_size": batch_size}, dir="wandb")
+if platform.system() == 'Linux':
+    DATA_PATH = "/fhome/maed/EpilepsyDataSet"
+else:
+    DATA_PATH = "input_reduit"
+
+
 
 class Standard_Dataset(Dataset):
     def __init__(self, X, Y=None, transformation=None):
         super().__init__()
+        X = np.array(X, dtype=np.float32)
         self.X = X
         self.y = Y
         self.transformation = transformation
+        print(type(self.X))
+        print(self.X[0])
 
     def __len__(self):
         return len(self.X)
@@ -38,10 +56,10 @@ def initialize_weights(model):
             if module.bias is not None:
                 nn.init.constant_(module.bias, 0)
 
-
-
+print("Loading data...")
+X, y = loadData(DATA_PATH)
 dataset = Standard_Dataset(X, y)
-dataloader = DataLoader(dataset, batch_size=8, shuffle=True)
+dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
 print("Data loaded")
 
@@ -49,7 +67,6 @@ model = CNNModel()
 initialize_weights(model)
 optimizer = Adam(model.parameters(), lr=3e-4)
 criterion = CrossEntropyLoss()
-epochs = 10
 print("Model Creat")
 
 ### TRAIN MODEL ###
@@ -70,5 +87,8 @@ for epoch in range(epochs):
         _, predicted = torch.max(outputs, 1)
         correct += (predicted == y_batch).sum().item()
         total += y_batch.size(0)
-
+        wandb.log({"loss": loss.item()})
+    wandb.log({"loss": total_loss / len(dataloader), "accuracy": correct / total, "epoch": epoch})
     print(f"Epoch {epoch + 1}/{epochs}, Loss: {total_loss / len(dataloader):.4f}, Accuracy: {correct / total:.4f}")
+
+wandb.finish()

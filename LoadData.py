@@ -25,11 +25,13 @@ def load_data(pathDir):
 
     for parquet, npz in zip(parquets, npzs):
         # Leer archivo parquet
+        if parquet.split('_')[0] != npz.split('_')[0]:
+            print("Error: Archivos no coinciden")
+            continue
         parquet_path = os.path.join(pathDir, parquet)
         meta = pd.read_parquet(parquet_path, engine='fastparquet')
         print(f"Archivo parquet cargado: {parquet}")
         meta_list = meta.values.tolist()
-        
         # Cargar archivo npz
         npz_path = os.path.join(pathDir, npz)
         data = np.load(npz_path, allow_pickle=True)
