@@ -44,8 +44,13 @@ def loadData(pathDir):
         # Almacenar resultados
         labels.extend(label_list)
         windows.extend(EEG_segments)
-        if parquet.split("_")[0] == "chb12":
-            break
+        del EEG_win
+        del EEG_segments
+        del label_list
+        del data
+        # if parquet.split("_")[0] == "chb12":
+        #     break
+        
     print(f"Metadatos almacenados: {len(labels)}")
     print(f"Ventanas EEG almacenadas: {len(windows)}")
     return windows, labels
