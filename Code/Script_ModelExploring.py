@@ -1,5 +1,10 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Thu May 19 17:26:05 2022
 
-###MAIN ENTRY POINT and how to use the EpilepsyLSTM model
+@author:  Carles Sanchez, Guillermo Torres, Debora Gil, Jose Elias Yauri
+"""
 
 #Main project directory
 Main_dir = r''
@@ -7,11 +12,13 @@ Main_dir = r''
 
 from Models.EpilepsyLSTM import *
 
+
+
 ### DEFINE VARIABLES
 DEVICE = 'cpu'       # options: 'cpu', 'cuda:0', 'cuda:1'
 N_CLASSES = 2        # number of classes. This case 2={seizure ,non-seizure}
 
-# Default hyper parameters: initializes dictionaries for model parameters
+# Default hyper parameters
 def get_default_hyperparameters():
    
     # initialize dictionaries
@@ -20,19 +27,19 @@ def get_default_hyperparameters():
     outmodule_params={}
     
     # network input parameters
-    ##contains the number of nodes n_nodes: 21
     inputmodule_params['n_nodes'] = 21
     
-    # LSTM unit  parameters: hidden_size, Lstacks and dropout
+    # LSTM unit  parameters
     net_params['Lstacks'] = 1  # stacked layers (num_layers)
     net_params['dropout'] = 0.0
     net_params['hidden_size']= 256  #h
    
-    # network output parameters: n_classes and hd
+    # network output parameters
     outmodule_params['n_classes']=2
     outmodule_params['hd']=128
     
     return inputmodule_params, net_params, outmodule_params
+
 
 
 ### LOAD DATASET
@@ -44,7 +51,7 @@ def get_default_hyperparameters():
 # Create EpilepsyLSTM model and initialize weights
 inputmodule_params, net_params, outmodule_params = get_default_hyperparameters()
 model = EpilepsyLSTM(inputmodule_params, net_params, outmodule_params)
-model.init_weights() #initializes model weights
+model.init_weights()
 
 model.to(DEVICE)
 
