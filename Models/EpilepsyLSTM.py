@@ -54,7 +54,6 @@ class EpilepsyLSTM(nn.Module):
          init_weights_xavier_normal(self)
         
     def forward(self, x):
-        
         ## Reshape input
         # input [batch, features (=n_nodes), sequence_length (T)] ([N, 21, 128])
         #x = x.permute(0, 2, 1) # lstm  [batch, sequence_length, features]
