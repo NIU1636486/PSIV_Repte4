@@ -1,11 +1,9 @@
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
 from Models.ModelWeightsInit import *
-
-#handles time-series data: EEG signals
-#LSTM layer followed by fully connected layers for classification
 
 
 class EpilepsyLSTM(nn.Module):
@@ -22,15 +20,15 @@ class EpilepsyLSTM(nn.Module):
 
         print('Running class: ', self.__class__.__name__)
         
-        ### NETWORK PARAMETERS
-        n_nodes=inputmodule_params['n_nodes'] #input features: EEG channels
+        ### NETWORK PARAMETERS/Users/carlotacortes/Desktop/Code2
+        n_nodes=inputmodule_params['n_nodes'] #DIMENSIONALITAT ESPAI ENTRADA: num_features
     
-        Lstacks=net_params['Lstacks'] #number of LSTM layers
+        Lstacks=net_params['Lstacks'] #numero xarxes recurrents
         dropout=net_params['dropout'] 
-        hidden_size=net_params['hidden_size'] #number of features in the LSTM hidden state
+        hidden_size=net_params['hidden_size']
        
-        n_classes=outmodule_params['n_classes'] #2 classes seizure vs non-seizure
-        hd=outmodule_params['hd'] #hidden layer for the FC layer
+        n_classes=outmodule_params['n_classes']
+        hd=outmodule_params['hd']
         
         self.inputmodule_params=inputmodule_params
         self.net_params=net_params
@@ -38,8 +36,6 @@ class EpilepsyLSTM(nn.Module):
         
         ### NETWORK ARCHITECTURE
         # IF batch_first THEN (batch, timesteps, features), ELSE (timesteps, batch, features)
-        #input: batch size, sequence_length, features
-        #output: batch size, sequence_length, hidden_size
         self.lstm = nn.LSTM(input_size=n_nodes, # the number of expected features (out of convs)
                                        hidden_size= hidden_size, # the number of features in the hidden state h
                                        num_layers= Lstacks, # number of stacked lstms 
@@ -47,7 +43,7 @@ class EpilepsyLSTM(nn.Module):
                                        bidirectional = False,
                                        dropout=dropout)
         
-        #maps hidden_size to hd and then to n_classes
+        #CAPA FULLY CONNECTED
         self.fc = nn.Sequential(nn.Linear(hidden_size, hd),
                                 nn.ReLU(),
                                 nn.Linear(hd, n_classes)
@@ -60,17 +56,20 @@ class EpilepsyLSTM(nn.Module):
     def forward(self, x):
         
         ## Reshape input
-        # input [batch, features (=n_nodes), sequence_length (T)] ([N, 21, 640])
-        x = x.permute(0, 2, 1) # lstm  [batch, sequence_length, features]
+        # input [batch, features (=n_nodes), sequence_length (T)] ([N, 21, 128])
+        #x = x.permute(0, 2, 1) # lstm  [batch, sequence_length, features]
+        #FA UN PERMUTE DEL CANAL: N FEATURES I 128
+        #COMENTAR LA LINEA !!!!
         
         ## LSTM Processing
         out, (hn, cn) = self.lstm(x)
         # out is [batch, sequence_length, hidden_size] for last stack output
         # hn and cn are [1, batch, hidden_size]
         out = out[:, -1, :] # hT state of lenght hidden_size
-        
-        #uses the last time-step output for classification
+
         ## Output Classification (Class Probabilities)
         x = self.fc(out)
 
         return x
+
+
