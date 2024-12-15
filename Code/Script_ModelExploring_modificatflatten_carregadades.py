@@ -87,7 +87,6 @@ def loadData(pathDir):
         del label_list, data, EEG_win
         gc.collect()
 
-    # FER UN FLATTEN A LES WINDOWS EN CANVI D?UN CONCATENATE??
     return windows, labels
 
 class Standard_Dataset(Dataset):
