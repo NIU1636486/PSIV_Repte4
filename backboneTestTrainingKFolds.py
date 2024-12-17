@@ -20,7 +20,7 @@ use_groups = False
 if platform.system() == 'Linux':
     DATA_PATH = "/fhome/maed/EpilepsyDataSet"
 else:
-    DATA_PATH = "input"
+    DATA_PATH = "../input"
 
 
 
@@ -60,11 +60,13 @@ def initialize_weights(model):
                 nn.init.constant_(module.bias, 0)
 
 print("Loading data...")
-X, y = loadData(DATA_PATH)
+X, y, groups = loadData(DATA_PATH)
 dataset = Standard_Dataset(X, y)
+print(groups)
 
 if use_groups:
-    group = None # canviar segons com vols agrupar-ho
+    samples_per_patient = 1000
+    group = np.repeat(np.arange(1, 25), samples_per_patient)
 
 else:
     group = None 

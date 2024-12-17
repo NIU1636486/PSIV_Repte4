@@ -24,8 +24,9 @@ def loadData(pathDir):
 
     labels = []
     windows = []
+    groups = []
 
-    for parquet, npz in zip(parquets, npzs):
+    for i, (parquet, npz) in enumerate(zip(parquets, npzs)):
         # Leer archivo parquet
         if parquet.split('_')[0] != npz.split('_')[0]:
             print("Error: Archivos no coinciden")
@@ -44,11 +45,13 @@ def loadData(pathDir):
         # Almacenar resultados
         labels.extend(label_list)
         windows.extend(EEG_segments)
+        group = ([i+1 for _ in range(len(labels))])
+        groups.extend(group)
         if parquet.split("_")[0] == "chb12":
             break
     print(f"Metadatos almacenados: {len(labels)}")
     print(f"Ventanas EEG almacenadas: {len(windows)}")
-    return windows, labels
+    return windows, labels, groups
 
 if __name__ == "__main__":
     # Ruta al directorio
