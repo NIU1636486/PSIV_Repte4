@@ -65,5 +65,5 @@ if __name__ == "__main__":
     pathDir = './input_reduit'
 
     # Llamada a la función
-    windows, metadata = loadData(pathDir)
+    windows, metadata, groups = loadData(pathDir)
     print(metadata[0:10000])
