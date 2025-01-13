@@ -15,7 +15,7 @@ import gc
 epochs = 20
 batch_size = 128
 num_folds = 5
-use_groups = False
+use_groups = True
 #wandb.init(project="PSIV_Repte4", config={"epochs": epochs, "batch_size": batch_size}, dir="wandb")
 if platform.system() == 'Linux':
     DATA_PATH = "/fhome/maed/EpilepsyDataSet"
@@ -62,11 +62,9 @@ def initialize_weights(model):
 print("Loading data...")
 X, y, groups = loadData(DATA_PATH)
 dataset = Standard_Dataset(X, y)
-print(groups)
 
 if use_groups:
-    samples_per_patient = 1000
-    group = np.repeat(np.arange(1, 25), samples_per_patient)
+    group = groups
 
 else:
     group = None 
@@ -87,6 +85,7 @@ else:
 fold_accuracies = list()
 fold_losses = list()
 
+print("Iniciem els folds")
 for fold, (train_idx, val_idx) in enumerate(splits):
     
     print(f"\nFold {fold + 1}/{num_folds}")
