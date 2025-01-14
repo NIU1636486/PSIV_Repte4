@@ -14,7 +14,7 @@ from Models.ModelWeightsInit import init_weights_xavier_normal
 import gc
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
+batch_size = 64
 from Models.EpilepsyLSTM import *
 from loadDataFirstTrainProvesLSTM import loadData
 
