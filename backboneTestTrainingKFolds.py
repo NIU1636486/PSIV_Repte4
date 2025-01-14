@@ -5,7 +5,7 @@ from torch.optim import Adam
 from torch.nn import CrossEntropyLoss
 from model_Backbone import CNNModel
 from torch import nn
-from loadDataFirstTrain import loadData
+from loadDataFirstTrainProvesLSTM import loadData
 from sklearn.model_selection import KFold, GroupKFold
 import wandb
 import platform
@@ -15,7 +15,7 @@ wandb.login(key="8e9b2ed0a8b812e7888f16b3aa28491ba440d81a")
 epochs = 20
 batch_size = 128
 num_folds = 5
-use_groups = True
+use_groups = False
 wandb.init(project="PSIV_Repte4", config={"epochs": epochs, "batch_size": batch_size}, dir="wandb")
 if platform.system() == 'Linux':
     DATA_PATH = "/fhome/maed/EpilepsyDataSet"
@@ -124,7 +124,7 @@ for fold, (train_idx, val_idx) in enumerate(splits):
             correct += (predicted == y_batch).sum().item()
             total += y_batch.size(0)
             wandb.log({"loss": loss.item()})
-        wandb.log({"loss": total_loss / len(dataloader), "accuracy": correct / total, "epoch": epoch})
+        wandb.log({"loss": total_loss / len(train_loader), "accuracy": correct / total, "epoch": epoch})
         print(f"Epoch {epoch + 1}/{epochs}, Loss: {total_loss / len(train_loader):.4f}, Accuracy: {correct / total:.4f}")
     
     
@@ -160,7 +160,7 @@ print(f"Average Validation Accuracy: {np.mean(fold_accuracies):.4f}")
 print(f"Average Validation Loss: {np.mean(fold_losses):.4f}")
 
 model = model.to("cpu")
-torch.save(model.state_dict(), "model_backbone_test.pth")
+torch.save(model.state_dict(), "model_backbone_BO.pth")
 
 torch.cuda.empty_cache()
 gc.collect()
