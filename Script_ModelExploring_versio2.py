@@ -116,7 +116,6 @@ for epoch in range(epochs):
     total = 0
 
     for X_batch, y_batch in dataloader:
-        print(X_batch.shape)
         X_batch = X_batch.to(device)
         y_batch = y_batch.to(device)
         
@@ -127,17 +126,15 @@ for epoch in range(epochs):
 
         optimizer.zero_grad()
         outputs = model(X_batch)
-        print(outputs)
         loss = criterion(outputs, y_batch)
         loss.backward()
         optimizer.step()
         total_loss += loss.item()
         _, predicted = torch.max(outputs, 1)
         print(predicted)
+        print(y_batch)
         correct += (predicted == y_batch).sum().item()
         total += y_batch.size(0)
-        if WANDB_SET:
-            wandb.log({"loss": loss.item(), "accuracy": correct / total})
     
     if WANDB_SET:
         wandb.log({"loss": total_loss / len(dataloader), "accuracy": correct / total, "epoch": epoch})
