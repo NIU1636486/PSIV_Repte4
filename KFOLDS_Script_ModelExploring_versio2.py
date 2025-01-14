@@ -164,8 +164,6 @@ for fold, (train_idx, val_idx) in enumerate(splits):
             optimizer.step()
             total_loss += loss.item()
             _, predicted = torch.max(outputs, 1)
-            print(predicted)
-            print(y_batch)
             correct += (predicted == y_batch).sum().item()
             total += y_batch.size(0)
         
