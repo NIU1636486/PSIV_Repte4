@@ -35,22 +35,22 @@ class CNNModel(nn.Module):
 
         self.fusion = nn.Flatten(start_dim=2)
 
-        self.output_unit = nn.Linear(self.output_channels[-1], self.n_classes)
+        self.output_unit = nn.Linear(self.output_channels[-1], 64)
+
+        self.output = nn.Linear(64, self.n_classes)
 
     def forward(self, x, feature_extraction=False):
         x = x.unsqueeze(1) 
 
         for block in self.blocks:
             x = block(x) 
-        if feature_extraction:
-            x = x.mean(dim=2)  # Now [batch_size, 64]
-
-            # Optionally, squeeze if needed to remove unnecessary dimensions
-            # x = x.squeeze(2)  # Final output [batch_size, 64]
-            return x
         x = self.fusion(x)
 
         x = x.mean(dim=2)
         x = self.output_unit(x)
 
+        if feature_extraction:
+            return x
+
+        x = self.output(x)
         return x

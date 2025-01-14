@@ -95,7 +95,7 @@ for epoch in range(epochs):
     print(f"Epoch {epoch + 1}/{epochs}, Loss: {total_loss / len(dataloader):.4f}, Accuracy: {correct / total:.4f}")
 
 model = model.to("cpu")
-torch.save(model.state_dict(), "model_backbone.pth")
+torch.save(model.state_dict(), "model_backbone_test.pth")
 
 torch.cuda.empty_cache()
 gc.collect()
