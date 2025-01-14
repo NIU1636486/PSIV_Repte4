@@ -51,6 +51,7 @@ class CNNModel(nn.Module):
 
         x = x.mean(dim=2)
         x = self.fc(x)
+        return x
 
         print("x.shape after fc", x.shape)
         
