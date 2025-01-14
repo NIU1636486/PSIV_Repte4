@@ -44,13 +44,13 @@ class CNNModel(nn.Module):
 
         for block in self.blocks:
             x = block(x) 
-        x = self.fusion(x)
         if feature_extraction:
-            print(x.shape)
+            print("SHAPE IN", x.shape)
             # x = x.mean(dim=2)  # Now [batch_size, 64, 14]
 
             return x
 
+        x = self.fusion(x)
         x = x.mean(dim=2)
         x = self.output_unit(x)
 
