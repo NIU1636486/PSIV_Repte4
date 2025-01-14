@@ -19,10 +19,10 @@ from loadDataFirstTrainProvesLSTM import loadData
 
 if platform.system() == 'Linux':
     DATA_PATH = "/fhome/maed/EpilepsyDataSet"
+    WANDB_SET = True
 else:
     DATA_PATH = "input_reduit"
-
-WANDB_SET = False
+    WANDB_SET = False
 epochs = 20
 if WANDB_SET:
     import wandb
