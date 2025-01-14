@@ -27,7 +27,7 @@ epochs = 20
 if WANDB_SET:
     import wandb
     wandb.login(key="8e9b2ed0a8b812e7888f16b3aa28491ba440d81a")
-    wandb.init(project="PSIV_Repte4", config={"epochs": epochs, "batch_size": batch_size}, dir="wandb")
+    wandb.init(project="PSIV_Repte4", config={"epochs": epochs}, dir="wandb")
 ### DEFINE VARIABLES
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")       # options: 'cpu', 'cuda:0', 'cuda:1'
 N_CLASSES = 2        # number of classes. This case 2={seizure ,non-seizure}
