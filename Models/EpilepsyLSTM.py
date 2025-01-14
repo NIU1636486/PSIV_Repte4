@@ -56,7 +56,7 @@ class EpilepsyLSTM(nn.Module):
     def forward(self, x):
         ## Reshape input
         # input [batch, features (=n_nodes), sequence_length (T)] ([N, 21, 128])
-        #x = x.permute(0, 2, 1) # lstm  [batch, sequence_length, features]
+        x = x.permute(0, 2, 1) # lstm  [batch, sequence_length, features]
         #FA UN PERMUTE DEL CANAL: N FEATURES I 128
         #COMENTAR LA LINEA !!!!
         
