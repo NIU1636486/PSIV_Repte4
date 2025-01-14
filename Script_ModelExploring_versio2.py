@@ -15,7 +15,7 @@ import gc
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 from Models.EpilepsyLSTM import *
-from loadDataFirstTrain import loadData
+from loadDataFirstTrainProvesLSTM import loadData
 
 if platform.system() == 'Linux':
     DATA_PATH = "/fhome/maed/EpilepsyDataSet"
@@ -81,9 +81,9 @@ class Standard_Dataset(Dataset):
             
 
 print("Loading data...")
-X, y = loadData(DATA_PATH)
-dataset = Standard_Dataset(X, y, transformation=T.Compose([torch.flatten]))
-dataloader = DataLoader(dataset, batch_size=1, shuffle=True)
+X, y, groups = loadData(DATA_PATH)
+dataset = Standard_Dataset(X, y, transformation=T.Compose([]))
+dataloader = DataLoader(dataset, batch_size=1, shuffle=False)
 print("Data loaded")
 
 
@@ -124,12 +124,15 @@ for epoch in range(epochs):
         outputs = model(X_batch)
         print(outputs)
         loss = criterion(outputs, y_batch)
+        print("LOSS", loss)
         loss.backward()
         optimizer.step()
         total_loss += loss.item()
+        print(total_loss)
         _, predicted = torch.max(outputs, 1)
         correct += (predicted == y_batch).sum().item()
         total += y_batch.size(0)
+        print(total)
 
     print(f"Epoch {epoch + 1}/{epochs}, Loss: {total_loss / len(dataloader):.4f}, Accuracy: {correct / total:.4f}")
 
