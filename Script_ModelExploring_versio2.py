@@ -87,7 +87,7 @@ class Standard_Dataset(Dataset):
 print("Loading data...")
 X, y, groups = loadData(DATA_PATH)
 dataset = Standard_Dataset(X, y, transformation=T.Compose([]))
-dataloader = DataLoader(dataset, batch_size=1, shuffle=False)
+dataloader = DataLoader(dataset, batch_size=64, shuffle=False)
 print("Data loaded")
 
 
@@ -133,6 +133,7 @@ for epoch in range(epochs):
         optimizer.step()
         total_loss += loss.item()
         _, predicted = torch.max(outputs, 1)
+        print(predicted)
         correct += (predicted == y_batch).sum().item()
         total += y_batch.size(0)
         if WANDB_SET:
