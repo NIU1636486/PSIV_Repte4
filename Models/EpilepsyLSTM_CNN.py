@@ -26,7 +26,7 @@ class EpilepsyLSTMCNN(nn.Module):
             param.requires_grad = False
 
         ### NETWORK PARAMETERS
-        n_nodes = self.cnn.output_channels[-1]  # Dimensionality of input (input_size)
+        n_nodes = 896 # Dimensionality of input (input_size)
 
 
         Lstacks = net_params['Lstacks']  # Number of stacked LSTM layers

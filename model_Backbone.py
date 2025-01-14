@@ -39,7 +39,7 @@ class CNNModel(nn.Module):
 
         # self.output = nn.Linear(64, self.n_classes)
 
-    def forward(self, x, feature_extraction=False):
+    def forward(self, x, feature_extraction=True):
         x = x.unsqueeze(1) 
 
         for block in self.blocks:

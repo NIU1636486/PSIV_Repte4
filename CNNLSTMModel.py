@@ -33,7 +33,7 @@ class CNNLSTMModel(nn.Module):
     def forward(self, x):
         # Pass input through the CNN
         with torch.no_grad():  # Ensure the CNN is not updated
-            x = self.cnn(x)
+            x = self.cnn(x, feature_extraction=True)
 
         # Reshape CNN output for LSTM (batch, seq_length, features)
         x = x.unsqueeze(1)  # Add a sequence dimension for LSTM
