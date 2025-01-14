@@ -26,7 +26,7 @@ class EpilepsyLSTMCNN(nn.Module):
             param.requires_grad = False
 
         ### NETWORK PARAMETERS
-        n_nodes = 896 # Dimensionality of input (input_size)
+        n_nodes = 64 # Dimensionality of input (input_size)
 
 
         Lstacks = net_params['Lstacks']  # Number of stacked LSTM layers
@@ -64,7 +64,7 @@ class EpilepsyLSTMCNN(nn.Module):
         ## LSTM Processing
         # Reshape input to [batch, sequence_length=1, features=n]
         with torch.no_grad():
-            x = self.cnn(x, feature_extraction=True)
+            x = self.cnn(x)
         print(x.shape)
         x = x.unsqueeze(1)  # Add a sequence_length dimension (set to 1)
         out, (hn, cn) = self.lstm(x)

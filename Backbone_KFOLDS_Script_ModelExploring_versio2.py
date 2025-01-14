@@ -99,7 +99,7 @@ print("Data loaded")
 # Create EpilepsyLSTM model and initialize weights
 print("Loading backbone...")
 pretrained_cnn = CNNModel()
-pretrained_cnn.load_state_dict(torch.load("./model_backbone.pth"))
+pretrained_cnn.load_state_dict(torch.load("./model_backbone_test.pth"))
 pretrained_cnn.eval()
 for param in pretrained_cnn.parameters():
     param.requires_grad = False
