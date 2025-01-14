@@ -3,7 +3,7 @@ import numpy as np
 import platform
 
 import torch
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import DataLoader, Dataset, Subset
 from torch import nn
 from torch.optim import Adam
 import torchvision.transforms as T
