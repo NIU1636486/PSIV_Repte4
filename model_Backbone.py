@@ -45,8 +45,10 @@ class CNNModel(nn.Module):
         for block in self.blocks:
             x = block(x) 
         if feature_extraction:
-            print("SHAPE IN", x.shape)
             # x = x.mean(dim=2)  # Now [batch_size, 64, 14]
+            x = x.mean(dim=2)  # This will reduce the sequence length dimension
+            x = x.squeeze(2)   # Remove the sequence length dimension (now we have a [batch_size, 64] tensor)
+            print("SHAPE IN", x.shape)
 
             return x
 
