@@ -37,12 +37,13 @@ class CNNModel(nn.Module):
 
         self.output_unit = nn.Linear(self.output_channels[-1], self.n_classes)
 
-    def forward(self, x):
+    def forward(self, x, feature_extraction=False):
         x = x.unsqueeze(1) 
 
         for block in self.blocks:
             x = block(x) 
-
+        if feature_extraction:
+            return x
         x = self.fusion(x)
 
         x = x.mean(dim=2)

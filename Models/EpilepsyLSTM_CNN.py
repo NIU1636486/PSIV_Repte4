@@ -64,7 +64,7 @@ class EpilepsyLSTMCNN(nn.Module):
         ## LSTM Processing
         # Reshape input to [batch, sequence_length=1, features=n]
         with torch.no_grad():
-            x = self.cnn(x)
+            x = self.cnn(x, feature_extraction=True)
         print(x.shape)
         x = x.unsqueeze(1)  # Add a sequence_length dimension (set to 1)
         out, (hn, cn) = self.lstm(x)
