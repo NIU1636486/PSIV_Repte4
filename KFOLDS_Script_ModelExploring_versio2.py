@@ -33,6 +33,7 @@ if WANDB_SET:
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")       # options: 'cpu', 'cuda:0', 'cuda:1'
 N_CLASSES = 2        # number of classes. This case 2={seizure ,non-seizure}
 num_folds = 5
+use_groups = False
 # Default hyper parameters
 def get_default_hyperparameters():
    
