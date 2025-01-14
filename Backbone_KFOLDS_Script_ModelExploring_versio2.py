@@ -9,13 +9,12 @@ from torch.optim import Adam
 import torchvision.transforms as T
 from sklearn.model_selection import KFold, GroupKFold
 from model_Backbone import CNNModel
-from Models.EpilepsyLSTM_CNN import EpilepsyLSTMCNN
+from Models.EpilepsyLSTM_CNN import *
 from Models.ModelWeightsInit import init_weights_xavier_normal
 import gc
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 batch_size = 64
-from Models.EpilepsyLSTM import *
 from loadDataFirstTrainProvesLSTM import loadData
 
 if platform.system() == 'Linux':
@@ -129,7 +128,7 @@ for fold, (train_idx, val_idx) in enumerate(splits):
     train_loader = DataLoader(train_subset, batch_size=batch_size, shuffle=False)
     val_loader = DataLoader(val_subset, batch_size=batch_size, shuffle=False)
     inputmodule_params, net_params, outmodule_params = get_default_hyperparameters()
-    model = EpilepsyLSTM(inputmodule_params, net_params, outmodule_params)
+    model = EpilepsyLSTMCNN(pretrained_cnn, inputmodule_params, net_params, outmodule_params)
     model.init_weights()
     model.to(device)
     print("Model Creat")
