@@ -148,7 +148,7 @@ for fold, (train_idx, val_idx) in enumerate(splits):
         correct = 0
         total = 0
 
-        for X_batch, y_batch in dataloader:
+        for X_batch, y_batch in train_loader:
             X_batch = X_batch.to(device)
             y_batch = y_batch.to(device)
             
