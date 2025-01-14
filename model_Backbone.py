@@ -43,6 +43,10 @@ class CNNModel(nn.Module):
         for block in self.blocks:
             x = block(x) 
         if feature_extraction:
+            x = x.mean(dim=2)  # Now [batch_size, 64]
+
+            # Optionally, squeeze if needed to remove unnecessary dimensions
+            # x = x.squeeze(2)  # Final output [batch_size, 64]
             return x
         x = self.fusion(x)
 
