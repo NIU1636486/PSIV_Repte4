@@ -34,8 +34,6 @@ def loadData(pathDir):
         if parquet.split('_')[0] != npz.split('_')[0]:
             print("Error: Archivos no coinciden")
             continue
-        if parquet.split("_")[0] == "chb06":
-            break
         parquet_path = os.path.join(pathDir, parquet)
         meta = pd.read_parquet(parquet_path, engine='fastparquet')
         print(f"Archivo parquet cargado: {parquet}")
@@ -90,3 +88,4 @@ if __name__ == "__main__":
     ones = [idx for idx, lbl in enumerate(metadata) if lbl == 1]
     print(len(ones))
     print(windows[0].shape)
+    print(groups)
