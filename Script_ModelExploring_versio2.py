@@ -23,7 +23,7 @@ else:
     DATA_PATH = "input_reduit"
 
 WANDB_SET = False
-
+epochs = 20
 if WANDB_SET:
     import wandb
     wandb.login(key="8e9b2ed0a8b812e7888f16b3aa28491ba440d81a")
@@ -107,7 +107,6 @@ print("Model Creat")
 ### TRAIN MODEL ###
 optimizer = Adam(model.parameters(), lr=3e-4)
 criterion = nn.CrossEntropyLoss()
-epochs = 10
 print("Starting train")
 for epoch in range(epochs):
     print(f"Epoch {epoch + 1}/{epochs}")
