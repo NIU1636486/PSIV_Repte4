@@ -124,15 +124,12 @@ for epoch in range(epochs):
         outputs = model(X_batch)
         print(outputs)
         loss = criterion(outputs, y_batch)
-        print("LOSS", loss)
         loss.backward()
         optimizer.step()
         total_loss += loss.item()
-        print(total_loss)
         _, predicted = torch.max(outputs, 1)
         correct += (predicted == y_batch).sum().item()
         total += y_batch.size(0)
-        print(total)
 
     print(f"Epoch {epoch + 1}/{epochs}, Loss: {total_loss / len(dataloader):.4f}, Accuracy: {correct / total:.4f}")
 
