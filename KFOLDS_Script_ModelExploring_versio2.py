@@ -8,7 +8,7 @@ from torch import nn
 from torch.optim import Adam
 import torchvision.transforms as T
 from sklearn.model_selection import KFold, GroupKFold
-
+from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, roc_curve
 from Models.EpilepsyLSTM import EpilepsyLSTM
 from Models.ModelWeightsInit import init_weights_xavier_normal
 import gc
@@ -103,6 +103,10 @@ print("Data loaded")
 # Guardem les mètriques de cada fold
 fold_accuracies = list()
 fold_losses = list()
+fold_f1_scores = list()
+fold_auc_scores = list()
+fold_precision_scores = []
+fold_recall_scores = []
 
 if use_groups and group is not None:
     kf = GroupKFold(n_splits=num_folds)
@@ -147,7 +151,11 @@ for fold, (train_idx, val_idx) in enumerate(splits):
         total_loss = 0.0
         correct = 0
         total = 0
-
+        
+        train_predictions = []
+        train_labels = []
+        train_probabilities = []
+        
         for X_batch, y_batch in train_loader:
             X_batch = X_batch.to(device)
             y_batch = y_batch.to(device)
@@ -166,9 +174,24 @@ for fold, (train_idx, val_idx) in enumerate(splits):
             _, predicted = torch.max(outputs, 1)
             correct += (predicted == y_batch).sum().item()
             total += y_batch.size(0)
+            
+            
+            # Store outputs for ROC curve
+            probabilities = torch.softmax(outputs, dim=1)  # Convert logits to probabilities
+            train_predictions.extend(predicted.cpu().numpy())
+            train_labels.extend(y_batch.cpu().numpy())
+            train_probabilities.extend(probabilities.cpu().numpy()[:, 1])  # Assuming binary classification
+        
+        train_accuracy = correct / total
+        train_loss = total_loss / len(train_loader)
+        train_f1 = f1_score(train_labels, train_predictions, average="macro")
+        train_auc = roc_auc_score(train_labels, train_probabilities) if len(set(train_labels)) > 1 else 0.5  # Avoid AUC error for one-class cases
+
         
         if WANDB_SET:
-            wandb.log({"loss": total_loss / len(train_loader), "accuracy": correct / total, "epoch": epoch})
+            wandb.log({"loss": total_loss / len(train_loader), "accuracy": correct / total, "epoch": epoch,"train_accuracy": train_accuracy,
+                "train_f1": train_f1,
+                "train_auc": train_auc})
         print(f"Epoch {epoch + 1}/{epochs}, Loss: {total_loss / len(train_loader):.4f}, Accuracy: {correct / total:.4f}")
 
 
@@ -177,6 +200,9 @@ for fold, (train_idx, val_idx) in enumerate(splits):
     val_loss = 0.0
     val_correct = 0
     val_total = 0
+    val_predictions = []
+    val_labels = []
+    val_probabilities = []
     
     with torch.no_grad():
         for X_batch, y_batch in val_loader:
@@ -188,20 +214,38 @@ for fold, (train_idx, val_idx) in enumerate(splits):
             _, predicted = torch.max(outputs,1)
             val_correct += (predicted == y_batch).sum().item()
             val_total += y_batch.size(0)
-    
+            
+            probabilities = torch.softmax(outputs, dim=1)
+            val_predictions.extend(predicted.cpu().numpy())
+            val_labels.extend(y_batch.cpu().numpy())
+            val_probabilities.extend(probabilities.cpu().numpy()[:, 1])
+            
     val_accuracy = val_correct / val_total
     val_loss /= len(val_loader)
+    val_precision = precision_score(val_labels, val_predictions, average="macro", zero_division=0)
+    val_recall = recall_score(val_labels, val_predictions, average="macro", zero_division=0)
+
+    
     if WANDB_SET:
-        wandb.log({"val_loss": val_loss, "val_accuracy": val_accuracy, "fold": fold})
+        wandb.log({"val_loss": val_loss, "val_accuracy": val_accuracy,"val_precision": val_precision,
+            "val_recall": val_recall, "fold": fold})
     print(f"Fold {fold + 1} Validation Loss: {val_loss:.4f}, Validation Accuracy: {val_accuracy:.4f}")
+    print(f"  Precision: {val_precision:.4f}")
+    print(f"  Recall: {val_recall:.4f}")
+    # Print Confusion Matrix
+    conf_matrix = confusion_matrix(val_labels, val_predictions)
+    print(f"Fold {fold + 1} Confusion Matrix:\n{conf_matrix}")
     fold_accuracies.append(val_accuracy)
     fold_losses.append(val_loss)
-
+    fold_precision_scores.append(val_precision)
+    fold_recall_scores.append(val_recall)
    
 # Report overall results
 print("\nK-Fold Cross Validation Results")
 print(f"Average Validation Accuracy: {np.mean(fold_accuracies):.4f}")
 print(f"Average Validation Loss: {np.mean(fold_losses):.4f}")
+print(f"Average Validation Precision: {np.mean(fold_precision_scores):.4f}")
+print(f"Average Validation Recall: {np.mean(fold_recall_scores):.4f}")
 
 torch.cuda.empty_cache()
 gc.collect()
