@@ -9,13 +9,12 @@ from torch.optim import Adam
 import torchvision.transforms as T
 from sklearn.model_selection import KFold, GroupKFold
 
-from Models.EpilepsyLSTM_vector import EpilepsyLSTM
 from Models.ModelWeightsInit import init_weights_xavier_normal
 import gc
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 batch_size = 64
-from Models.EpilepsyLSTM import *
+from Models.EpilepsyLSTM_vector import *
 from loadDataFirstTrainProvesLSTM import loadData
 
 if platform.system() == 'Linux':
@@ -208,7 +207,7 @@ gc.collect()
 
 # Guardar el modelo
 model = model.to("cpu")
-torch.save(model.state_dict(), "epilepsy_lstm.pth")
+torch.save(model.state_dict(), "epilepsy_lstm_vector.pth")
 print("Model saved")
 if WANDB_SET:
     wandb.finish()
