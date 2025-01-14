@@ -170,8 +170,8 @@ for fold, (train_idx, val_idx) in enumerate(splits):
             total += y_batch.size(0)
         
         if WANDB_SET:
-            wandb.log({"loss": total_loss / len(dataloader), "accuracy": correct / total, "epoch": epoch})
-        print(f"Epoch {epoch + 1}/{epochs}, Loss: {total_loss / len(dataloader):.4f}, Accuracy: {correct / total:.4f}")
+            wandb.log({"loss": total_loss / len(train_loader), "accuracy": correct / total, "epoch": epoch})
+        print(f"Epoch {epoch + 1}/{epochs}, Loss: {total_loss / len(train_loader):.4f}, Accuracy: {correct / total:.4f}")
 
 
     ## VALIDATION MODEL ###
