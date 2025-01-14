@@ -7,7 +7,7 @@ from model_Backbone import CNNModel
 from torch import nn
 from loadDataFirstTrain import loadData
 from sklearn.model_selection import KFold, GroupKFold
-#import wandb
+import wandb
 import platform
 import gc
 
