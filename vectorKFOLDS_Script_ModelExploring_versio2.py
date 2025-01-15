@@ -157,7 +157,7 @@ for fold, (train_idx, val_idx) in enumerate(splits):
         train_probabilities = []
 
         for X_batch, y_batch in train_loader:
-            print(X_batch.shape)
+            #print(X_batch.shape)
             X_batch = X_batch.to(device)
             y_batch = y_batch.to(device)
             
