@@ -111,8 +111,15 @@ if use_groups and group is not None:
     
     #LEAVE ONE OUT:
     unique_patients = list(set(group))
+    
+    #agafar els unique pacients respecte el num de folds:
+    if len(unique_patients) > num_folds:
+        selected_patients = random.sample(unique_patients, num_folds)
+    else:
+        selected_patients = unique_patients
+    
     splits = []
-    for test_patient in unique_patients:
+    for test_patient in selected_patients:
         train_idx = [i for i, patient in enumerate(groups) if patient != test_patient]
         test_idx = [i for i, patient in enumerate(groups) if patient == test_patient]
         splits.append((train_idx, test_idx))  # guardar-ho com una tupla train_idx i test_idx igual com el enumerate(splits)
