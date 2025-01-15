@@ -25,7 +25,7 @@ if platform.system() == 'Linux':
 else:
     DATA_PATH = "input"
     WANDB_SET = False
-epochs = 20
+epochs = 40
 if WANDB_SET:
     import wandb
     wandb.login(key="8e9b2ed0a8b812e7888f16b3aa28491ba440d81a")
