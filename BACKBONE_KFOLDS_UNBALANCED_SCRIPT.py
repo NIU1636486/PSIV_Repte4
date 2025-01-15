@@ -88,7 +88,7 @@ class Standard_Dataset(Dataset):
             
 
 print("Loading data...")
-X, y, groups = loadData(DATA_PATH)
+X, y = loadData(DATA_PATH)
 dataset = Standard_Dataset(X, y, transformation=T.Compose([]))
 if use_groups:
     group = groups
