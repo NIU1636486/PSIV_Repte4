@@ -12,7 +12,7 @@ from model_Backbone import CNNModel
 from Models.EpilepsyLSTM_CNN import *
 from Models.ModelWeightsInit import init_weights_xavier_normal
 import gc
-from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, roc_curve, precision_score, recall_score, confusion_matrix
+from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, roc_curve, precision_score, recall_score, confusion_matrix, classification_report
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -225,7 +225,8 @@ for fold, (train_idx, val_idx) in enumerate(splits):
     val_loss /= len(val_loader)
     val_precision = precision_score(val_labels, val_predictions, average="macro", zero_division=0)
     val_recall = recall_score(val_labels, val_predictions, average="macro", zero_division=0)
-    
+    report = classification_report(val_labels, val_predictions, target_names=["No Seizure", "Seizure"], zero_division=0)
+    print(f"\nClassification Report for Fold {fold + 1}:\n{report}")
     if WANDB_SET:
         wandb.log({"val_loss": val_loss, "val_accuracy": val_accuracy, "fold": fold})
     print(f"Fold {fold + 1} Validation Loss: {val_loss:.4f}, Validation Accuracy: {val_accuracy:.4f}, Validation Precision:{val_precision:.4f}, Validation Recall:{val_recall:.4f}")
