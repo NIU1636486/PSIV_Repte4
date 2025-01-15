@@ -159,7 +159,7 @@ for fold, (train_idx, val_idx) in enumerate(splits):
         total = 0
 
         for X_batch, y_batch in train_loader:
-            print(X_batch.shape)
+            #print(X_batch.shape)
             X_batch = X_batch.to(device)
             y_batch = y_batch.to(device)
             
