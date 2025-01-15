@@ -51,7 +51,7 @@ def loadData(pathDir):
         
         # Determinar el 15% de índices a eliminar
         num_windows = len(label_list)
-        num_to_remove = int(0.15 * num_windows)
+        num_to_remove = int(0.35 * num_windows)
         indices_to_remove = set(np.random.choice(num_windows,num_to_remove, replace=False))
 
         # Filtrar datos
