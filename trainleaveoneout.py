@@ -15,7 +15,7 @@ import gc
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 batch_size = 64
 from Models.EpilepsyLSTM_vector import *
-from loadDataFirstTrainProvesLSTM import loadData
+from loadDataFirstTrainProvesLSTM10p import loadData
 
 if platform.system() == 'Linux':
     DATA_PATH = "/fhome/maed/EpilepsyDataSet"
