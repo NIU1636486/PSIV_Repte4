@@ -71,8 +71,8 @@ def loadData(pathDir):
         groups.extend(group_indices)
 
         # Salir después de procesar "chb02" (opcional)
-        #if parquet.split("_")[0] == "chb10":
-            #break
+        if parquet.split("_")[0] == "chb10":
+            break
 
     print(f"Metadatos almacenados: {len(labels)}")
     print(f"Ventanas EEG almacenadas: {len(windows)}")
