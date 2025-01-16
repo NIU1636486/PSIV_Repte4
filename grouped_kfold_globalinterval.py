@@ -17,7 +17,7 @@ from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, roc_curve, 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 batch_size = 64
-from load_seizure import loadData
+from BALANCED import loadData
 
 if platform.system() == 'Linux':
     DATA_PATH = "/fhome/maed/EpilepsyDataSet"
@@ -25,7 +25,7 @@ if platform.system() == 'Linux':
 else:
     DATA_PATH = "./input"
     WANDB_SET = False
-epochs = 40
+epochs = 20
 if WANDB_SET:
     import wandb
     wandb.login(key="8e9b2ed0a8b812e7888f16b3aa28491ba440d81a")
