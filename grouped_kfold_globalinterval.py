@@ -252,7 +252,7 @@ gc.collect()
 
 # Guardar el modelo
 model = model.to("cpu")
-torch.save(model.state_dict(), "backbone_globalinterval.pth")
+torch.save(model.state_dict(), "backbone_globalinterval_BALANCED.pth")
 print("Model saved")
 if WANDB_SET:
     wandb.finish()
