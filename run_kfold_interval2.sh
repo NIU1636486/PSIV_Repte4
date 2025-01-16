@@ -12,6 +12,6 @@
 sleep 3
 
 # Change to your user home folder in the cluster.
-python /fhome/maed05/PSIV_Repte4/grouped_kfold_globalinterval2.py
+python /fhome/maed05/PSIV_Repte4_git/grouped_kfold_globalinterval2.py
 
 
