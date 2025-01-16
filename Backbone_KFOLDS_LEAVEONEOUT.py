@@ -12,10 +12,11 @@ from model_Backbone import CNNModel
 from Models.EpilepsyLSTM_CNN import *
 from Models.ModelWeightsInit import init_weights_xavier_normal
 import gc
+from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, roc_curve, precision_score, recall_score, confusion_matrix, classification_report
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 batch_size = 64
-from loadDataFirstTrainProvesLSTM10p import loadData
+from loadDataFirstTrainProvesLSTM import loadData
 
 if platform.system() == 'Linux':
     DATA_PATH = "/fhome/maed/EpilepsyDataSet"
@@ -23,7 +24,8 @@ if platform.system() == 'Linux':
 else:
     DATA_PATH = "input_reduit"
     WANDB_SET = False
-epochs = 20
+
+epochs = 40
 if WANDB_SET:
     import wandb
     wandb.login(key="8e9b2ed0a8b812e7888f16b3aa28491ba440d81a")
@@ -109,6 +111,10 @@ for param in pretrained_cnn.parameters():
 # Guardem les mètriques de cada fold
 fold_accuracies = list()
 fold_losses = list()
+fold_f1_scores = list()
+fold_auc_scores = list()
+fold_precision_scores = []
+fold_recall_scores = []
 
 if use_groups and group is not None:
     #Incorrecte: aixo divideix en grups de pacients, no es leave one out:
@@ -137,10 +143,7 @@ else:
 print("Iniciem els folds")
 for fold, (train_idx, val_idx) in enumerate(splits):
     
-    if use_groups:
-        print(f"\nFold {fold + 1}: Leaving Out Patient {unique_patients[fold]} for Testing")
-    else:
-        print(f"\nFold {fold + 1}/{num_folds}")
+    print(f"\nFold {fold + 1}: Leaving Out Patient {unique_patients[fold]} for Testing")
    
     # Preparem els dataloaders del model pel fold actual
     train_subset = Subset(dataset, train_idx)
@@ -171,6 +174,10 @@ for fold, (train_idx, val_idx) in enumerate(splits):
         total_loss = 0.0
         correct = 0
         total = 0
+        
+        train_predictions = []
+        train_labels = []
+        train_probabilities = []
 
         for X_batch, y_batch in train_loader:
             X_batch = X_batch.to(device)
@@ -190,6 +197,15 @@ for fold, (train_idx, val_idx) in enumerate(splits):
             _, predicted = torch.max(outputs, 1)
             correct += (predicted == y_batch).sum().item()
             total += y_batch.size(0)
+            
+            # Store outputs for ROC curve
+            probabilities = torch.softmax(outputs, dim=1)  # Convert logits to probabilities
+            train_predictions.extend(predicted.cpu().numpy())
+            train_labels.extend(y_batch.cpu().numpy())
+            train_probabilities.extend(probabilities.cpu().detach().numpy()[:, 1])  # Assuming binary classification
+        
+        train_f1 = f1_score(train_labels, train_predictions, average="macro")
+        train_auc = roc_auc_score(train_labels, train_probabilities) if len(set(train_labels)) > 1 else 0.5  # Avoid AUC error for one-class cases
         
         if WANDB_SET:
             wandb.log({"loss": total_loss / len(train_loader), "accuracy": correct / total, "epoch": epoch})
@@ -201,6 +217,9 @@ for fold, (train_idx, val_idx) in enumerate(splits):
     val_loss = 0.0
     val_correct = 0
     val_total = 0
+    val_predictions = []
+    val_labels = []
+    val_probabilities = []
     
     with torch.no_grad():
         for X_batch, y_batch in val_loader:
@@ -212,20 +231,35 @@ for fold, (train_idx, val_idx) in enumerate(splits):
             _, predicted = torch.max(outputs,1)
             val_correct += (predicted == y_batch).sum().item()
             val_total += y_batch.size(0)
-    
+            
+            probabilities = torch.softmax(outputs, dim=1)
+            val_predictions.extend(predicted.cpu().numpy())
+            val_labels.extend(y_batch.cpu().numpy())
+            val_probabilities.extend(probabilities.cpu().numpy()[:, 1])
+            
     val_accuracy = val_correct / val_total
     val_loss /= len(val_loader)
+    val_precision = precision_score(val_labels, val_predictions, average="macro", zero_division=0)
+    val_recall = recall_score(val_labels, val_predictions, average="macro", zero_division=0)
+    report = classification_report(val_labels, val_predictions, target_names=["No Seizure", "Seizure"], zero_division=0)
+    print(f"\nClassification Report for Fold {fold + 1}:\n{report}")
+    
     if WANDB_SET:
         wandb.log({"val_loss": val_loss, "val_accuracy": val_accuracy, "fold": fold})
-    print(f"Fold {fold + 1} Validation Loss: {val_loss:.4f}, Validation Accuracy: {val_accuracy:.4f}")
+    print(f"Fold {fold + 1} Validation Loss: {val_loss:.4f}, Validation Accuracy: {val_accuracy:.4f}, Validation Precision:{val_precision:.4f}, Validation Recall:{val_recall:.4f}")
+    conf_matrix = confusion_matrix(val_labels, val_predictions)
+    print(f"Fold {fold + 1} Confusion Matrix:\n{conf_matrix}")
     fold_accuracies.append(val_accuracy)
     fold_losses.append(val_loss)
-
+    fold_precision_scores.append(val_precision)
+    fold_recall_scores.append(val_recall)
    
 # Report overall results
 print("\nK-Fold Cross Validation Results")
 print(f"Average Validation Accuracy: {np.mean(fold_accuracies):.4f}")
 print(f"Average Validation Loss: {np.mean(fold_losses):.4f}")
+print(f"Average Validation Precision: {np.mean(fold_precision_scores):.4f}")
+print(f"Average Validation Recall: {np.mean(fold_recall_scores):.4f}")
 
 torch.cuda.empty_cache()
 gc.collect()
