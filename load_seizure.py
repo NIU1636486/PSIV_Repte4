@@ -73,12 +73,12 @@ def loadData(pathDir):
         # Filtrar datos
         filtered_labels = [label for i, label in enumerate(label_list) if i not in indices_to_remove]
         filtered_windows = [window for i, window in enumerate(EEG_segments) if i not in indices_to_remove]
-        filtered_windows = [group for i, group in enumerate(group_indices) if i not in indices_to_remove]
+        filtered_groups = [group for i, group in enumerate(group_indices) if i not in indices_to_remove]
 
         # Almacenar resultados
-        labels.extend(label_list)
-        windows.extend(EEG_segments)
-        groups.extend(group_indices)
+        labels.extend(filtered_labels)
+        windows.extend(filtered_windows)
+        groups.extend(filtered_groups)
 
         # Salir después de procesar "chb02" (opcional)
         if parquet.split("_")[0] == "chb20":
