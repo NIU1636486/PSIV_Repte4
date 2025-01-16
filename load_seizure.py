@@ -65,13 +65,23 @@ def loadData(pathDir):
         # Asignar índices de grupo a las ventanas EEG
         group_indices = [group_idx_map[idx] for idx in meta.index]
 
+        # Determinar el 15% de índices a eliminar
+        num_windows = len(label_list)
+        num_to_remove = int(0.45 * num_windows)
+        indices_to_remove = set(np.random.choice(num_windows,num_to_remove, replace=False))
+
+        # Filtrar datos
+        filtered_labels = [label for i, label in enumerate(label_list) if i not in indices_to_remove]
+        filtered_windows = [window for i, window in enumerate(EEG_segments) if i not in indices_to_remove]
+        filtered_windows = [group for i, group in enumerate(group_indices) if i not in indices_to_remove]
+
         # Almacenar resultados
         labels.extend(label_list)
         windows.extend(EEG_segments)
         groups.extend(group_indices)
 
         # Salir después de procesar "chb02" (opcional)
-        if parquet.split("_")[0] == "chb10":
+        if parquet.split("_")[0] == "chb20":
             break
 
     print(f"Metadatos almacenados: {len(labels)}")
