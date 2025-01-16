@@ -73,7 +73,7 @@ def loadData(pathDir):
         groups.extend(group_indices)
 
         # Salir después de procesar "chb10" (opcional)
-        if parquet.split("_")[0] == "chb15":
+        if parquet.split("_")[0] == "chb10":
             break
 
     # Balancear los datos
