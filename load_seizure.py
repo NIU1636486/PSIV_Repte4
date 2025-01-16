@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import pandas as pd
+import random
 
 def loadData(pathDir):
     """
@@ -34,6 +35,7 @@ def loadData(pathDir):
         # Leer archivo parquet
         parquet_path = os.path.join(pathDir, parquet)
         meta = pd.read_parquet(parquet_path, engine='fastparquet')
+        meta["Index"] = meta.index
         print(f"Archivo parquet cargado: {parquet}")
 
         # Leer archivo npz
@@ -44,45 +46,40 @@ def loadData(pathDir):
         # Obtener ventanas EEG y etiquetas
         EEG_win = data["EEG_win"]
         EEG_segments = [EEG_win[i, :, :] for i in range(EEG_win.shape[0])]
-        
-        meta_list = meta.values.tolist()
-        label_list = [label[0] for label in meta_list]
 
         # Asegurarse de que las dimensiones coincidan
-        if len(EEG_segments) != len(meta_list):
+        if len(EEG_segments) != len(meta):
             print("Error: El número de ventanas no coincide con los metadatos")
             continue
 
-        # Agrupar los datos
+        # Agrupar los datos y eliminar un porcentaje de grupos
         grouped = meta.groupby([meta.columns[0], meta.columns[2], meta.columns[3]])
+        group_keys = list(grouped.groups.keys())  # Obtener las claves de los grupos
+        num_groups = len(group_keys)
+        num_to_remove = int(0.20 * num_groups)  # Calcular el 15%
+        groups_to_remove = random.sample(group_keys, num_to_remove)  # Seleccionar grupos al azar
 
-        # Crear un diccionario para mapear índices de grupo
-        group_idx_map = {}
-        for group_idx, (group_keys, group_data) in enumerate(grouped):
-            for idx in group_data.index:
-                group_idx_map[idx] = group_idx
+        # Filtrar los datos para eliminar los grupos seleccionados
+        meta_filtered = meta[~meta[[meta.columns[0], meta.columns[2], meta.columns[3]]]
+                             .apply(tuple, axis=1).isin(groups_to_remove)].reset_index(drop=True)
+        EEG_filtered = [EEG_segments[i] for i in range(len(EEG_segments)) if i in meta_filtered.index]
 
-        # Asignar índices de grupo a las ventanas EEG
-        group_indices = [group_idx_map[idx] for idx in meta.index]
-
-        # Determinar el 15% de índices a eliminar
-        num_windows = len(label_list)
-        num_to_remove = int(0.45 * num_windows)
-        indices_to_remove = set(np.random.choice(num_windows,num_to_remove, replace=False))
-
-        # Filtrar datos
-        filtered_labels = [label for i, label in enumerate(label_list) if i not in indices_to_remove]
-        filtered_windows = [window for i, window in enumerate(EEG_segments) if i not in indices_to_remove]
-        filtered_groups = [group for i, group in enumerate(group_indices) if i not in indices_to_remove]
+        # Actualizar etiquetas y grupos
+        label_list = meta_filtered[meta.columns[0]].tolist()
+        grouped_filtered = meta_filtered.groupby([meta.columns[0], meta.columns[2], meta.columns[3]])
+        group_indices = [group_id for group_id, (_, group_data) in enumerate(grouped_filtered)
+                         for _ in range(len(group_data))]
 
         # Almacenar resultados
-        labels.extend(filtered_labels)
-        windows.extend(filtered_windows)
-        groups.extend(filtered_groups)
+        labels.extend(label_list)
+        windows.extend(EEG_filtered)
+        groups.extend(group_indices)
+
+        del label_list, EEG_filtered, group_indices
 
         # Salir después de procesar "chb02" (opcional)
-        if parquet.split("_")[0] == "chb20":
-            break
+        #if parquet.split("_")[0] == "chb10":
+            #break
 
     print(f"Metadatos almacenados: {len(labels)}")
     print(f"Ventanas EEG almacenadas: {len(windows)}")
@@ -96,4 +93,3 @@ if __name__ == "__main__":
 
     # Llamada a la función
     windows, metadata, groups = loadData(pathDir)
-    #print(len(windows), len(metadata), len(groups))
