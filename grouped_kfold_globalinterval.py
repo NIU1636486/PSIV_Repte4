@@ -13,11 +13,11 @@ from Models.EpilepsyLSTM_CNN import *
 from Models.ModelWeightsInit import init_weights_xavier_normal
 import gc
 from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, roc_curve, precision_score, recall_score, confusion_matrix, classification_report
-
+from LOAD_PROVES import loadData
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 batch_size = 64
-from BALANCED import loadData
+
 
 if platform.system() == 'Linux':
     DATA_PATH = "/fhome/maed/EpilepsyDataSet"
@@ -25,7 +25,7 @@ if platform.system() == 'Linux':
 else:
     DATA_PATH = "./input"
     WANDB_SET = False
-epochs = 20
+epochs = 40
 if WANDB_SET:
     import wandb
     wandb.login(key="8e9b2ed0a8b812e7888f16b3aa28491ba440d81a")
