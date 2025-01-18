@@ -97,6 +97,12 @@ else:
     group = None 
 print("Data loaded")
 
+print(f"X shape: {len(X)}")
+print(f"y shape: {len(y)}")
+if use_groups:
+    print(f"groups shape: {len(groups)}")
+
+
 
 # Create EpilepsyLSTM model and initialize weights
 print("Loading backbone...")
@@ -127,6 +133,7 @@ print("Iniciem els folds")
 for fold, (train_idx, val_idx) in enumerate(splits):
     
     print(f"\nFold {fold + 1}/{num_folds}")
+    print(f"Fold {fold}: Train indices max: {max(train_idx)}, Validation indices max: {max(val_idx)}")
    
     # Preparem els dataloaders del model pel fold actual
     train_subset = Subset(dataset, train_idx)

@@ -53,6 +53,7 @@ def loadData(pathDir):
         keys = [key for i, key in enumerate(keys) if i not in groups_to_remove]
 
 
+
         meta_list = meta.values.tolist()
         label_list = []
         key_list = []
@@ -63,9 +64,10 @@ def loadData(pathDir):
             window = EEG_win[i,:,:]
             if key_meta in keys:
                 label_list.append(meta[0])
-                key_list.append(key_meta)
+                key_list.append(str(key_meta))
                 windows_list.append(window)
-                
+        
+
         # Almacenar resultados
         labels.extend(label_list)
         windows.extend(windows_list)
@@ -73,10 +75,13 @@ def loadData(pathDir):
         
         del label_list, windows_list, key_list
 
-        if parquet.split("_")[0] == "chb01":
+        if parquet.split("_")[0] == "chb02":
+            unique_groups = np.unique(groups)
+            print(f"Grupos únicos: {unique_groups}")
+            print(f"Valor máximo del grupo: {max(unique_groups)}, Valor mínimo: {min(unique_groups)}")
             break
     
-    print(groups)
+    #print(groups)
     print(f"Metadatos almacenados: {len(labels)}")
     print(f"Ventanas EEG almacenadas: {len(windows)}")
     print(f"Grupos almacenados: {len(groups)}")
@@ -89,4 +94,6 @@ if __name__ == "__main__":
 
     # Llamada a la función
     windows, metadata, groups = loadData(pathDir)
-    #print(metadata[0:10000])
+    #print(windows[0:10])
+    #print(metadata[0:10])
+    print(groups[0:10])
