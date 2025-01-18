@@ -48,7 +48,7 @@ def loadData(pathDir):
         grouped = meta.groupby([meta.columns[0], meta.columns[2], meta.columns[3]])
         keys = [ key for key,_ in grouped] 
         label_0 = [ i for i, (key,_) in enumerate(grouped) if key[0] == 0]
-        num_to_remove = int(0.5 * len(label_0))  # Calcular el 15%
+        num_to_remove = int(0.7 * len(label_0))  # Calcular el 15%
         groups_to_remove = random.sample(label_0, num_to_remove)  # Seleccionar grupos al azar
         keys = [key for i, key in enumerate(keys) if i not in groups_to_remove]
 
@@ -75,8 +75,8 @@ def loadData(pathDir):
         
         del label_list, windows_list, key_list
 
-        #if parquet.split("_")[0] == "chb02":
-            #break
+        if parquet.split("_")[0] == "chb20":
+            break
     
     #print(groups)
     print(f"Metadatos almacenados: {len(labels)}")
@@ -93,4 +93,4 @@ if __name__ == "__main__":
     windows, metadata, groups = loadData(pathDir)
     #print(windows[0:10])
     #print(metadata[0:10])
-    print(groups[0:10])
+    #print(groups[0:10])

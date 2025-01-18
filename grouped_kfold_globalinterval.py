@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import platform
+import random
 
 import torch
 from torch.utils.data import DataLoader, Dataset, Subset
@@ -95,12 +96,7 @@ if use_groups:
 
 else:
     group = None 
-print("Data loaded")
 
-print(f"X shape: {len(X)}")
-print(f"y shape: {len(y)}")
-if use_groups:
-    print(f"groups shape: {len(groups)}")
 
 
 
@@ -121,8 +117,20 @@ fold_precision_scores = []
 fold_recall_scores = []
 
 if use_groups and group is not None:
-    kf = GroupKFold(n_splits=num_folds)
-    splits = kf.split(X, y, groups=group)
+    #kf = GroupKFold(n_splits=num_folds)
+    #splits = kf.split(X, y, groups=group)
+
+    selected_intervals = []
+    for x in range(1,20):
+        groups = [index for index, data in enumerate(group) if str(x) in str(data[-4:-2])]
+        print(groups)
+        selected_intervals.extend(random.sample(group, num_folds))
+    
+    splits = []
+    for test_interval in selected_intervals:
+        train_idx = [i for i, interval in enumerate(group) if interval != test_interval]
+        test_idx = [i for i, interval in enumerate(group) if interval == test_interval]
+        splits.append((train_idx, test_idx))  # guardar-ho com una tupla train_idx i test_idx igual com el enumerate(splits)
 
 else:
     kf = KFold(n_splits=num_folds, shuffle=False)
