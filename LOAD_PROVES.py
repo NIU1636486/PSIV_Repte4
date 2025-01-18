@@ -75,11 +75,8 @@ def loadData(pathDir):
         
         del label_list, windows_list, key_list
 
-        if parquet.split("_")[0] == "chb02":
-            unique_groups = np.unique(groups)
-            print(f"Grupos únicos: {unique_groups}")
-            print(f"Valor máximo del grupo: {max(unique_groups)}, Valor mínimo: {min(unique_groups)}")
-            break
+        #if parquet.split("_")[0] == "chb02":
+            #break
     
     #print(groups)
     print(f"Metadatos almacenados: {len(labels)}")
