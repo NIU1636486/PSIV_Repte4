@@ -14,7 +14,7 @@ from Models.EpilepsyLSTM_CNN import *
 from Models.ModelWeightsInit import init_weights_xavier_normal
 import gc
 from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, roc_curve, precision_score, recall_score, confusion_matrix, classification_report
-from LOAD_PROVES import loadData
+from PROVA import loadData
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 batch_size = 64
